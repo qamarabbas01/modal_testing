@@ -268,45 +268,61 @@ if (window.performanceTracker) {
   });
 }
 
-// Wait for router to be ready, then preload sections for current route
 router.isReady().then(() => {
   const currentPath = router.currentRoute.value.path;
   const currentRoute = resolveRouteFromPath(currentPath);
   
   if (currentRoute) {
-    const userRole = authStore.currentUser?.role || 'guest';
-    const sectionsToPreload = getPreloadSectionsForRoute(currentRoute, userRole);
+    const sectionsToPreload = Array.isArray(currentRoute.preLoadSections) 
+      ? [...currentRoute.preLoadSections] 
+      : [];
     
     log('main.js', 'init', 'preload', 'Preloading sections for current route', { 
       path: currentPath,
-      sections: sectionsToPreload 
+      sections: sectionsToPreload,
+      routeConfigSlug: currentRoute.slug
     });
     
-    // Preload each section (don't block app mount)
-    Promise.all(
-      sectionsToPreload.map(section => 
-        preloadSection(section).catch(err => {
-          log('main.js', 'init', 'preload-error', 'Section preload failed (non-blocking)', { 
-            section, 
-            error: err.message 
-          });
+    if (sectionsToPreload.length > 0) {
+      Promise.all(
+        sectionsToPreload.map(section => {
+          if (section && typeof section === 'string') {
+            return preloadSection(section).catch(err => {
+              log('main.js', 'init', 'preload-error', 'Section preload failed (non-blocking)', { 
+                section, 
+                error: err.message 
+              });
+            });
+          } else {
+            log('main.js', 'init', 'preload-skip', 'Skipping invalid section name', {
+              section,
+              type: typeof section
+            });
+            return Promise.resolve();
+          }
         })
-      )
-    ).then(() => {
-      log('main.js', 'init', 'preload-complete', 'Route sections preloaded', { 
-        path: currentPath,
-        count: sectionsToPreload.length 
-      });
-      if (window.performanceTracker) {
-        window.performanceTracker.step({
-          step: 'preloadSections_complete',
-          file: 'main.js',
-          method: 'main',
-          flag: 'preload',
-          purpose: `Preloaded ${sectionsToPreload.length} sections for ${currentPath}`
+      ).then(() => {
+        log('main.js', 'init', 'preload-complete', 'Route sections preloaded', { 
+          path: currentPath,
+          count: sectionsToPreload.length 
         });
-      }
-    });
+        if (window.performanceTracker) {
+          window.performanceTracker.step({
+            step: 'preloadSections_complete',
+            file: 'main.js',
+            method: 'main',
+            flag: 'preload',
+            purpose: `Preloaded ${sectionsToPreload.length} sections for ${currentPath}`
+          });
+        }
+      });
+    } else {
+      log('main.js', 'init', 'preload-skip', 'No sections to preload for current route', { 
+        path: currentPath,
+        hasPreLoadSections: !!currentRoute.preLoadSections,
+        preLoadSectionsValue: currentRoute.preLoadSections
+      });
+    }
   } else {
     log('main.js', 'init', 'preload-skip', 'No route config found for current path, skipping preload', { 
       path: currentPath 
