@@ -631,7 +631,7 @@
     "enabled": true,
     "componentPath": "@/templates/shop/ShopWrapper.vue",
     "redirectIfNotAuth": "",
-    "preLoadSections": ["auth"]
+    "preLoadSections": ["auth", "shop"]
   },
   {
     "slug": "/dev",
