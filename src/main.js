@@ -24,6 +24,8 @@ import { useAuthStore } from './stores/useAuthStore.js';
 import { preloadSection } from './utils/section/sectionPreloader.js';
 import buildConfig from '../build/buildConfig.js';
 import { validateOnStartup, printEnvSummary } from './utils/build/envValidator.js';
+import { resolveRouteFromPath } from './utils/route/routeResolver.js';
+import { getPreloadSectionsForRoute } from './utils/section/sectionResolver.js';
 
 // Import base styles
 import './assets/main.css';
@@ -255,44 +257,65 @@ if (authStore.isAuthenticated) {
   }
 }
 
-// Preload default sections (non-blocking)
+// Preload sections based on current route (non-blocking)
 if (window.performanceTracker) {
   window.performanceTracker.step({
     step: 'preloadSections_start',
     file: 'main.js',
     method: 'main',
     flag: 'preload',
-    purpose: 'Preload default sections'
+    purpose: 'Preload sections for current route'
   });
 }
 
-log('main.js', 'init', 'preload', 'Preloading default sections', { 
-  sections: buildConfig.preLoadSections 
-});
-
-// Preload each default section (don't block app mount)
-Promise.all(
-  buildConfig.preLoadSections.map(section => 
-    preloadSection(section).catch(err => {
-      log('main.js', 'init', 'preload-error', 'Section preload failed (non-blocking)', { 
-        section, 
-        error: err.message 
+// Wait for router to be ready, then preload sections for current route
+router.isReady().then(() => {
+  const currentPath = router.currentRoute.value.path;
+  const currentRoute = resolveRouteFromPath(currentPath);
+  
+  if (currentRoute) {
+    const userRole = authStore.currentUser?.role || 'guest';
+    const sectionsToPreload = getPreloadSectionsForRoute(currentRoute, userRole);
+    
+    log('main.js', 'init', 'preload', 'Preloading sections for current route', { 
+      path: currentPath,
+      sections: sectionsToPreload 
+    });
+    
+    // Preload each section (don't block app mount)
+    Promise.all(
+      sectionsToPreload.map(section => 
+        preloadSection(section).catch(err => {
+          log('main.js', 'init', 'preload-error', 'Section preload failed (non-blocking)', { 
+            section, 
+            error: err.message 
+          });
+        })
+      )
+    ).then(() => {
+      log('main.js', 'init', 'preload-complete', 'Route sections preloaded', { 
+        path: currentPath,
+        count: sectionsToPreload.length 
       });
-    })
-  )
-).then(() => {
-  log('main.js', 'init', 'preload-complete', 'Default sections preloaded', { 
-    count: buildConfig.preLoadSections.length 
-  });
-  if (window.performanceTracker) {
-    window.performanceTracker.step({
-      step: 'preloadSections_complete',
-      file: 'main.js',
-      method: 'main',
-      flag: 'preload',
-      purpose: 'Default sections preloaded'
+      if (window.performanceTracker) {
+        window.performanceTracker.step({
+          step: 'preloadSections_complete',
+          file: 'main.js',
+          method: 'main',
+          flag: 'preload',
+          purpose: `Preloaded ${sectionsToPreload.length} sections for ${currentPath}`
+        });
+      }
+    });
+  } else {
+    log('main.js', 'init', 'preload-skip', 'No route config found for current path, skipping preload', { 
+      path: currentPath 
     });
   }
+}).catch(err => {
+  log('main.js', 'init', 'preload-error', 'Error waiting for router ready', { 
+    error: err.message 
+  });
 });
 
 // Mount application
@@ -335,7 +358,7 @@ if (window.performanceTracker) {
 log('main.js', 'init', 'complete', 'Application initialization complete', {
   locale: activeLocale,
   isAuthenticated: authStore.isAuthenticated,
-  preloadSections: buildConfig.preLoadSections.length
+  currentPath: router.currentRoute.value.path
 });
 
 // Print performance table if logging enabled

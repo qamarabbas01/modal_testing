@@ -10,12 +10,11 @@ import { log } from '../src/utils/common/logHandler.js';
 /**
  * Sections that should ALWAYS be preloaded (eagerly bundled)
  * These are critical paths that must load immediately
+ * 
+ * NOTE: Removed hardcoded sections. Now only preloads sections
+ * defined in routeConfig.json per route.
  */
-export const ALWAYS_PRELOAD_SECTIONS = [
-  'auth',           // Authentication is always needed
-  'misc',           // 404 and error pages must be instantly available
-  'dashboard-global' // Base dashboard for all authenticated users
-];
+export const ALWAYS_PRELOAD_SECTIONS = [];
 
 /**
  * Default asset preload configuration
@@ -130,12 +129,7 @@ export function extractAllSectionsFromRouteConfig(routeConfigArray) {
  * @returns {boolean} - True if section should be preloaded
  */
 export function shouldSectionBePreloaded(sectionName, routeConfigArray) {
-  // Check if in always-preload list
-  if (ALWAYS_PRELOAD_SECTIONS.includes(sectionName)) {
-    return true;
-  }
-
-  // Check if any route explicitly lists this section in preLoadSections
+  // Only check if any route explicitly lists this section in preLoadSections
   for (const route of routeConfigArray) {
     if (Array.isArray(route.preLoadSections) && route.preLoadSections.includes(sectionName)) {
       return true;
@@ -259,7 +253,7 @@ export function getDefaultManifestMetadata() {
  * Default export - configuration object for runtime use
  */
 const buildConfig = {
-  preLoadSections: ALWAYS_PRELOAD_SECTIONS,
+  preLoadSections: ALWAYS_PRELOAD_SECTIONS, // Now empty - relies on routeConfig.json
   alwaysPreloadSections: ALWAYS_PRELOAD_SECTIONS,
   defaultAssetPreloadConfig: DEFAULT_ASSET_PRELOAD_CONFIG,
   assetTypeDefinitions: ASSET_TYPE_DEFINITIONS,
