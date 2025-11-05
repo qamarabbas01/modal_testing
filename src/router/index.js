@@ -96,8 +96,60 @@ function generateRoutesFromConfig() {
 }
 
 /**
+ * Pre-load all components using import.meta.glob
+ * This allows Vite to analyze and bundle all components at build time
+ * The glob pattern matches all Vue components in templates and components directories
+ */
+const componentModules = import.meta.glob([
+  '@/templates/**/*.vue',
+  '@/components/**/*.vue'
+], { eager: false });
+
+/**
+ * Find component in the pre-loaded modules
+ * Handles different path formats that might be in the glob keys
+ * 
+ * @param {string} componentPath - Component path (e.g., '@/templates/auth/...')
+ * @returns {Function|null} - Component loader function or null
+ */
+function findComponentLoader(componentPath) {
+  // Try direct match first
+  if (componentModules[componentPath]) {
+    return componentModules[componentPath];
+  }
+  
+  // Try with /src/ prefix (in case glob resolves @/ to src/)
+  const srcPath = componentPath.replace('@/', '/src/');
+  if (componentModules[srcPath]) {
+    return componentModules[srcPath];
+  }
+  
+  // Try with ./src/ prefix
+  const relativeSrcPath = componentPath.replace('@/', './src/');
+  if (componentModules[relativeSrcPath]) {
+    return componentModules[relativeSrcPath];
+  }
+  
+  // Try with relative path from router
+  const relativePath = componentPath.replace('@/', '../');
+  if (componentModules[relativePath]) {
+    return componentModules[relativePath];
+  }
+  
+  // Try to find by matching the end of the path (filename)
+  const fileName = componentPath.split('/').pop();
+  for (const [key, loader] of Object.entries(componentModules)) {
+    if (key.endsWith(fileName)) {
+      return loader;
+    }
+  }
+  
+  return null;
+}
+
+/**
  * Load component for a route
- * Dynamically imports component based on path (with role-based resolution)
+ * Uses pre-loaded component map from import.meta.glob
  * 
  * @param {object} route - Route configuration object
  * @returns {Promise} - Component promise
@@ -133,27 +185,36 @@ async function loadRouteComponent(route) {
       componentPath 
     });
 
-    // Convert @/ alias to relative path
-    // The browser can't resolve @/ alias at runtime - it needs actual paths
-    // From src/router/ to src/templates/ or src/components/ is one level up: ../
-    let importPath = componentPath;
-    if (componentPath.startsWith('@/')) {
-      // Remove @/ and convert to relative path from router directory
-      // @/templates/auth/... becomes ../templates/auth/...
-      // @/components/misc/... becomes ../components/misc/...
-      const pathWithoutAlias = componentPath.substring(2); // Remove '@/'
-      importPath = `../${pathWithoutAlias}`;
+    // Find the component loader in the pre-loaded modules
+    // Log available keys in development for debugging
+    if (import.meta.env.DEV) {
+      const availableKeys = Object.keys(componentModules).slice(0, 5); // Log first 5 for debugging
+      log('router/index.js', 'loadRouteComponent', 'debug', 'Sample glob keys (first 5)', { 
+        availableKeys,
+        componentPath,
+        totalKeys: Object.keys(componentModules).length
+      });
+    }
+    
+    const componentLoader = findComponentLoader(componentPath);
+    
+    if (!componentLoader) {
+      // Log available keys for debugging
+      const allKeys = Object.keys(componentModules);
+      log('router/index.js', 'loadRouteComponent', 'error', 'Component not found in pre-loaded modules', {
+        componentPath,
+        availableKeys: allKeys.slice(0, 10), // Log first 10 keys
+        totalKeys: allKeys.length
+      });
+      throw new Error(`Component not found in pre-loaded modules: ${componentPath}`);
     }
 
-    // Dynamically import component
-    // We use @vite-ignore because paths are dynamic
-    // The browser will resolve the relative path
-    const componentModule = await import(/* @vite-ignore */ importPath);
+    // Load the component - this will use the bundled chunk reference
+    const componentModule = await componentLoader();
 
     log('router/index.js', 'loadRouteComponent', 'success', 'Component loaded successfully', {
       slug: route.slug,
-      path: componentPath,
-      importPath
+      path: componentPath
     });
 
     if (window.performanceTracker) {
