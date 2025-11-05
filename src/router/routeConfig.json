@@ -630,8 +630,7 @@
     "supportedRoles": ["all"],
     "enabled": true,
     "componentPath": "@/templates/shop/ShopWrapper.vue",
-    "redirectIfNotAuth": "",
-    "preLoadSections": ["auth"]
+    "redirectIfNotAuth": ""
   },
   {
     "slug": "/dev",
@@ -639,8 +638,7 @@
     "section": "dev",
     "supportedRoles": ["all"],
     "enabled": true,
-    "componentPath": "@/components/dev/DemoPage.vue",
-    "preLoadSections": ["auth"]
+    "componentPath": "@/components/dev/DemoPage.vue"
   },
   {
     "slug": "/:pathMatch(.*)*",
