@@ -394,8 +394,20 @@ router.afterEach(async (to, from) => {
     const authStore = useAuthStore();
     const userRole = authStore.currentUser?.role || 'guest';
     
-    // Get sections to preload from route config (ONLY preLoadSections, not the route's own section)
-    const sectionsToPreload = getPreloadSectionsForRoute(routeConfig, userRole);
+    // IMPORTANT: Only use preLoadSections directly from routeConfig
+    // Do NOT use getPreloadSectionsForRoute if it might merge/inherit other sections
+    // Get sections to preload ONLY from the route's preLoadSections array
+    const sectionsToPreload = Array.isArray(routeConfig.preLoadSections) 
+      ? [...routeConfig.preLoadSections]  // Create a copy to avoid mutations
+      : [];
+    
+    // Log what we're about to preload for debugging
+    log('router/index.js', 'afterEach', 'preload-check', 'Checking preload sections', {
+      path: to.path,
+      preLoadSections: routeConfig.preLoadSections,
+      sectionsToPreload,
+      routeConfigSlug: routeConfig.slug
+    });
     
     // Also load translations for the current route's section (for current view)
     const section = to.meta?.section;
@@ -415,22 +427,30 @@ router.afterEach(async (to, from) => {
       });
 
       try {
-        // Preload only sections from preLoadSections (non-blocking)
+        // Preload ONLY sections from preLoadSections array (non-blocking)
         for (const sectionToPreload of sectionsToPreload) {
-          preloadSection(sectionToPreload).catch(err => {
-            log('router/index.js', 'afterEach', 'preload-error', 'Section preload failed (non-blocking)', {
-              section: sectionToPreload,
-              error: err.message
+          // Validate section name exists in manifest before preloading
+          if (sectionToPreload && typeof sectionToPreload === 'string') {
+            preloadSection(sectionToPreload).catch(err => {
+              log('router/index.js', 'afterEach', 'preload-error', 'Section preload failed (non-blocking)', {
+                section: sectionToPreload,
+                error: err.message
+              });
             });
-          });
-          
-          // Load translations for preloaded sections (non-blocking)
-          loadTranslationsForSection(sectionToPreload).catch(err => {
-            log('router/index.js', 'afterEach', 'translation-error', 'Translation load failed (non-blocking)', { 
-              section: sectionToPreload, 
-              error: err.message 
+            
+            // Load translations for preloaded sections (non-blocking)
+            loadTranslationsForSection(sectionToPreload).catch(err => {
+              log('router/index.js', 'afterEach', 'translation-error', 'Translation load failed (non-blocking)', { 
+                section: sectionToPreload, 
+                error: err.message 
+              });
             });
-          });
+          } else {
+            log('router/index.js', 'afterEach', 'preload-skip', 'Skipping invalid section name', {
+              sectionToPreload,
+              type: typeof sectionToPreload
+            });
+          }
         }
 
         log('router/index.js', 'afterEach', 'success', 'Section preload and translation load initiated', { 
@@ -443,7 +463,11 @@ router.afterEach(async (to, from) => {
         });
       }
     } else {
-      log('router/index.js', 'afterEach', 'no-preload', 'No sections to preload for route', { path: to.path });
+      log('router/index.js', 'afterEach', 'no-preload', 'No sections to preload for route', { 
+        path: to.path,
+        hasPreLoadSections: !!routeConfig.preLoadSections,
+        preLoadSectionsValue: routeConfig.preLoadSections
+      });
     }
   } else {
     log('router/index.js', 'afterEach', 'no-config', 'Route has no configuration, skipping preload', { path: to.path });
