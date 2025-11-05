@@ -423,14 +423,19 @@ router.afterEach(async (to, from) => {
     if (sectionsToPreload.length > 0) {
       log('router/index.js', 'afterEach', 'preload', 'Preloading sections for route', { 
         path: to.path,
-        sections: sectionsToPreload 
+        sections: sectionsToPreload,
+        note: 'ONLY these sections will be preloaded, not all sections'
       });
 
       try {
         // Preload ONLY sections from preLoadSections array (non-blocking)
         for (const sectionToPreload of sectionsToPreload) {
-          // Validate section name exists in manifest before preloading
           if (sectionToPreload && typeof sectionToPreload === 'string') {
+            log('router/index.js', 'afterEach', 'preload-section', 'Preloading specific section', {
+              section: sectionToPreload,
+              path: to.path
+            });
+            
             preloadSection(sectionToPreload).catch(err => {
               log('router/index.js', 'afterEach', 'preload-error', 'Section preload failed (non-blocking)', {
                 section: sectionToPreload,

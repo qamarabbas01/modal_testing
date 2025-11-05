@@ -118,20 +118,21 @@ export async function getSectionBundlePaths(sectionName, manifest) {
     file: 'manifestLoader.js',
     method: 'getSectionBundlePaths',
     flag: 'start',
-    purpose: 'Get section bundle paths'
+    purpose: `Get bundle paths for section: ${sectionName}`
   });
 
   try {
-    // Load manifest if not provided
+    // Load manifest if not provided (will be cached after first load)
     const manifestData = manifest || await loadSectionManifest();
-
-    // Get section entry
+    
+    // IMPORTANT: We only extract the specific section we need
+    // The manifest contains all sections, but we only use the one requested
     const sectionEntry = manifestData[sectionName];
 
     if (!sectionEntry) {
       log('manifestLoader.js', 'getSectionBundlePaths', 'not-found', 'Section not found in manifest', { 
         sectionName,
-        availableSections: Object.keys(manifestData)
+        availableSections: Object.keys(manifestData).length + ' sections available'
       });
       window.performanceTracker.step({
         step: 'getSectionBundlePaths_not_found',
