@@ -9,19 +9,11 @@
     "preLoadSections": ["dashboard"]
   },
   {
-    "slug": "/",
-    "section": "home",
-    "requiresAuth": false,
-    "supportedRoles": [],
-    "componentPath": "@/templates/home/HomeWrapper.vue",
-    "preLoadSections": ["dashboard"]
-  },
-  {
     "slug": "/404",
     "section": "misc",
     "requiresAuth": false,
     "supportedRoles": [],
-    "componentPath": "@/components/misc/NotFound.vue",
+    "componentPath": "@/templates/misc/NotFound.vue",
     "preLoadSections": []
   },
   {
@@ -105,7 +97,7 @@
       "creator": "dashboard-creator"
     },
     "inheritConfigFromParent": true,
-    "supportedRoles": [],
+    "supportedRoles": ["creator"],
     "componentPath": "@/templates/dashboard/page/creator/DashboardCallAndChatSettings.vue"
   },
   {
@@ -117,7 +109,7 @@
       "vendor": "dashboard-global"
     },
     "inheritConfigFromParent": true,
-    "supportedRoles": [],
+    "supportedRoles": ["creator", "fan", "agent", "vendor"],
     "componentPath": "@/templates/dashboard/page/role/DashboardChangePassword.vue"
   },
   {
@@ -127,7 +119,7 @@
       "fan": "dashboard-fan"
     },
     "inheritConfigFromParent": true,
-    "supportedRoles": [],
+    "supportedRoles": ["creator", "fan"],
     "customComponentPath": {
       "creator": {
         "componentPath": "@/templates/dashboard/page/creator/DashboardCouponsCreator.vue"
@@ -647,7 +639,8 @@
     "section": "dev",
     "supportedRoles": ["all"],
     "enabled": true,
-    "componentPath": "@/templates/dev/DemoPage.vue"
+    "componentPath": "@/components/dev/DemoPage.vue",
+    "preLoadSections": ["auth"]
   },
   {
     "slug": "/:pathMatch(.*)*",
