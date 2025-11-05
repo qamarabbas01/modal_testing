@@ -9,6 +9,14 @@
     "preLoadSections": ["dashboard"]
   },
   {
+    "slug": "/",
+    "section": "home",
+    "requiresAuth": false,
+    "supportedRoles": [],
+    "componentPath": "@/templates/home/HomeWrapper.vue",
+    "preLoadSections": ["dashboard"]
+  },
+  {
     "slug": "/404",
     "section": "misc",
     "requiresAuth": false,
