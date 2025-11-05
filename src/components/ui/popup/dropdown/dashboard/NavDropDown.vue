@@ -47,7 +47,7 @@ const submenuPopupConfig = {
 const headerMenuPanel = ref(null);
 const showSubmenuPopup = ref(false);
 const selectedMenuItem = ref(null);
-import { menuItems } from "../../../../../assets/data/menuItems.js";
+
 import { useRouter } from "vue-router";
 const router = useRouter();
 

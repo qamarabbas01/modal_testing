@@ -26,7 +26,7 @@
 import { ref, onMounted, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { authHandler } from "@/services/authHandler";
+import { authHandler } from "@/utils/auth/authHandler";
 import { useI18n } from "vue-i18n";
 
 const email = ref("");

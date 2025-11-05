@@ -12,7 +12,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { authHandler } from "@/services/authHandler";
+import { authHandler } from "@/utils/auth/authHandler";
 
 const email = ref("");
 const message = ref("");

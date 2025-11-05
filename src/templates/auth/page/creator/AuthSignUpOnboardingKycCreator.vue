@@ -34,7 +34,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { authHandler } from "@/services/authHandler";
+import { authHandler } from "@/utils/auth/authHandler";
 import { triggerTranslationForElements } from "@/utils/translationUtils";
 import AuthWrapper from "@/components/auth/authWrapper/AuthWrapper.vue";
 import Heading from "@/components/dev/default/Heading.vue";

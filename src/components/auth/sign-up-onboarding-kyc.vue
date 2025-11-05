@@ -11,7 +11,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { authHandler } from "@/services/authHandler";
+import { authHandler } from "@/utils/auth/authHandler";
 import { triggerTranslationForElements } from "@/utils/translationUtils";
 
 const router = useRouter();
@@ -20,7 +20,6 @@ const error = ref("");
 const isLoading = ref(false);
 
 onMounted(() => {
-  // Trigger translation for elements with data-translate attribute
   setTimeout(() => {
     triggerTranslationForElements();
   }, 100);

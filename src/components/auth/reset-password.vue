@@ -19,7 +19,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { authHandler } from "@/services/authHandler";
+import { authHandler } from "@/utils/auth/authHandler";
 import { useRouter } from "vue-router";
 
 const email = ref("");

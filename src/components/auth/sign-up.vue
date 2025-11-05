@@ -26,8 +26,8 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { authHandler } from "@/services/authHandler";
-import { enterpriseI18n } from "@/i18n/enterprise/i18n";
+import { authHandler } from "@/utils/auth/authHandler";
+import { loadTranslationsForSection } from "@/utils/translation/translationLoader.js";
 import { useI18n } from "vue-i18n";
 
 const name = ref("");
@@ -52,7 +52,7 @@ const guestRole = computed(() => t('auth.common.guest'));
 // Preload auth section translations
 onMounted(async () => {
   try {
-    await enterpriseI18n.preloadLocale(locale.value);
+    await loadTranslationsForSection('auth', locale.value);
     console.log(`[SIGNUP] Preloaded auth section for locale '${locale.value}'`);
   } catch (error) {
     console.error(`[SIGNUP] Failed to preload auth section:`, error);

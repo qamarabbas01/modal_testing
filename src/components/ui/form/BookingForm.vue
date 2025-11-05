@@ -1,7 +1,6 @@
 <script setup>
 import InputDefaultComponent from "@/components/dev/input/InputDefaultComponent.vue";
 import CheckboxGroup from "./checkbox/CheckboxGroup.vue";
-import InputComponentDashbaord from "../../dev/input/InputComponentDashboard.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import CheckboxSwitch from "@/components/dev/checkbox/CheckboxSwitch.vue";
 import ButtonComponent from "@/components/dev/button/ButtonComponent.vue";
@@ -1551,7 +1550,7 @@ import BaseInput from "@/components/dev/input/BaseInput.vue";
               Blocked user
             </div>
             <div class="w-full">
-              <InputComponentDashbaord
+              <input
                 id="input_b"
                 placeholder="Search by username & email"
                 v-model="name"

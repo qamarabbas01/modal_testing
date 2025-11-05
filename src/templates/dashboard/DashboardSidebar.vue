@@ -246,7 +246,7 @@
 
 <script>
 import { ref } from "vue";
-import { menuItems } from "../../assets/data/menuItems.js";
+
 import PopupHandler from "@/components/ui/popup/PopupHandler.vue";
 import AvatarProfilePopup from "@/components/ui/popup/AvatarProfilePopup.vue";
 import NotificationPopup from "@/components/ui/popup/NotificationPopup.vue";

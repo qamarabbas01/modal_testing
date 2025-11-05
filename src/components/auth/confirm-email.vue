@@ -18,7 +18,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { authHandler } from "@/services/authHandler";
+import { authHandler } from "@/utils/auth/authHandler";
 
 const email = ref("");
 const code = ref("");

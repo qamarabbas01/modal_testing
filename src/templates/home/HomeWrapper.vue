@@ -3,7 +3,7 @@
     <HomeHeader />
     <div style="display:grid; grid-template-columns: 280px 1fr; gap: 16px; min-height: 60vh;">
       <HomeSidebar />
-      <HomeWrapperMain />
+     <h1>Home Page</h1>
     </div>
     <HomeFooter />
   </div>
@@ -13,5 +13,5 @@
 import { default as HomeHeader } from './HomeHeader.vue'
 import { default as HomeSidebar } from './HomeSidebar.vue'
 import { default as HomeFooter } from './HomeFooter.vue'
-import { default as HomeWrapperMain } from '@/components/layout/home/HomeWrapperMain.vue'
+
 </script>
