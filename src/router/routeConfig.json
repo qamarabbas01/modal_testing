@@ -13,7 +13,7 @@
     "section": "misc",
     "requiresAuth": false,
     "supportedRoles": [],
-    "componentPath": "@/templates/misc/NotFound.vue",
+    "componentPath": "@/components/misc/NotFound.vue",
     "preLoadSections": []
   },
   {
@@ -24,7 +24,7 @@
     "enabled": true,
     "supportedRoles": ["all"],
     "redirectIfNotAuth": "/log-in",
-    "componentPath": "@/templates/dashboard/page/role/Dashboard.vue",
+    "componentPath": "@/components/dashboard/Dashboard.vue",
     "dependencies": {
       "roles": {
         "creator": {
