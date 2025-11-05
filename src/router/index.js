@@ -123,21 +123,37 @@ async function loadRouteComponent(route) {
     // Resolve component path (handles role-based customComponentPath)
     const componentPath = resolveComponentPathForRoute(route, userRole);
     
+    if (!componentPath) {
+      throw new Error(`No component path found for route: ${route.slug}`);
+    }
+    
     log('router/index.js', 'loadRouteComponent', 'resolve', 'Component path resolved', { 
       slug: route.slug, 
       userRole, 
       componentPath 
     });
 
-    // Convert @ alias to relative path
-    const relativePath = componentPath.replace('@/', '../');
+    // Convert @/ alias to relative path
+    // The browser can't resolve @/ alias at runtime - it needs actual paths
+    // From src/router/ to src/templates/ or src/components/ is one level up: ../
+    let importPath = componentPath;
+    if (componentPath.startsWith('@/')) {
+      // Remove @/ and convert to relative path from router directory
+      // @/templates/auth/... becomes ../templates/auth/...
+      // @/components/misc/... becomes ../components/misc/...
+      const pathWithoutAlias = componentPath.substring(2); // Remove '@/'
+      importPath = `../${pathWithoutAlias}`;
+    }
 
     // Dynamically import component
-    const componentModule = await import(/* @vite-ignore */ relativePath);
+    // We use @vite-ignore because paths are dynamic
+    // The browser will resolve the relative path
+    const componentModule = await import(/* @vite-ignore */ importPath);
 
     log('router/index.js', 'loadRouteComponent', 'success', 'Component loaded successfully', {
       slug: route.slug,
-      path: componentPath
+      path: componentPath,
+      importPath
     });
 
     if (window.performanceTracker) {
@@ -156,7 +172,8 @@ async function loadRouteComponent(route) {
     log('router/index.js', 'loadRouteComponent', 'error', 'Failed to load component, using fallback', {
       slug: route.slug,
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
+      componentPath: route.componentPath
     });
 
     if (window.performanceTracker) {
