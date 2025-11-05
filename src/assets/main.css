@@ -1,0 +1,56 @@
+/**
+ * Main Application Styles
+ * 
+ * Tailwind base styles are injected automatically by @tailwindcss/vite plugin.
+ * Add any custom global styles here.
+ */
+
+/* Tailwind directives for Tailwind v3 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global styles */
+:root {
+  --color-primary: #939393;
+  --color-primary-dark: #181a1b;
+  --color-accent-pink: #fb5ba2;
+  --color-accent-green: #07f468;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-accent-pink);
+  outline-offset: 2px;
+}
+
+/* Selection styles */
+::selection {
+  background-color: var(--color-accent-pink);
+  color: white;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+

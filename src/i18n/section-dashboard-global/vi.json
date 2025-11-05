@@ -1,0 +1,18 @@
+{
+  "dashboard": {
+    "title": "Bảng Điều Khiển",
+    "welcome": "Chào mừng trở lại!",
+    "overview": "Tổng Quan",
+    "settings": "Cài Đặt",
+    "profile": "Hồ Sơ",
+    "logout": "Đăng Xuất"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "edit": "Chỉnh Sửa",
+    "delete": "Xóa"
+  }
+}
+
