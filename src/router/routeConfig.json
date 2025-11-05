@@ -24,7 +24,7 @@
     "enabled": true,
     "supportedRoles": ["all"],
     "redirectIfNotAuth": "/log-in",
-    "componentPath": "@/components/dashboard/Dashboard.vue",
+    "componentPath": "@/templates/dashboard/page/role/Dashboard.vue",
     "dependencies": {
       "roles": {
         "creator": {
