@@ -637,7 +637,7 @@
     "requiresAuth": false,
     "section": "dev",
     "supportedRoles": ["all"],
-    "enabled": true,
+    "enabled": false,
     "componentPath": "@/components/dev/DemoPage.vue"
   },
   {

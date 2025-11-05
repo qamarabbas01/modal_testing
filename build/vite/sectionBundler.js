@@ -54,6 +54,11 @@ export function discoverAllSectionsFromConfig() {
         continue;
       }
 
+      // Skip disabled routes - don't create chunks for them
+      if (route.enabled === false) {
+        continue;
+      }
+
       // Skip routes without section
       if (!route.section) {
         continue;

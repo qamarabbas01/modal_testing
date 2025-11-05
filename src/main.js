@@ -269,6 +269,15 @@ if (window.performanceTracker) {
 }
 
 router.isReady().then(() => {
+  // Preload auth section by default (non-blocking)
+  log('main.js', 'init', 'preload-default', 'Preloading default auth section', { section: 'auth' });
+  preloadSection('auth').catch(err => {
+    log('main.js', 'init', 'preload-error', 'Default auth section preload failed (non-blocking)', { 
+      section: 'auth',
+      error: err.message 
+    });
+  });
+
   const currentPath = router.currentRoute.value.path;
   const currentRoute = resolveRouteFromPath(currentPath);
   

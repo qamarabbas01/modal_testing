@@ -44,6 +44,15 @@ function generateRoutesFromConfig() {
 
   // Generate route for each configuration entry
   for (const route of routeConfig) {
+    // Skip disabled routes - don't create routes or chunks for them
+    if (route.enabled === false) {
+      log('router/index.js', 'generateRoutesFromConfig', 'skip-disabled', 'Skipping disabled route', { 
+        path: route.slug, 
+        section: route.section 
+      });
+      continue;
+    }
+
     // Handle redirects
     if (route.redirect) {
       routes.push({
