@@ -630,7 +630,8 @@
     "supportedRoles": ["all"],
     "enabled": true,
     "componentPath": "@/templates/shop/ShopWrapper.vue",
-    "redirectIfNotAuth": ""
+    "redirectIfNotAuth": "",
+    "preLoadSections": ["dashboard"]
   },
   {
     "slug": "/dev",
