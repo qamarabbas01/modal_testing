@@ -164,30 +164,6 @@ async function preloadJavaScriptBundle(bundlePath, sectionName) {
     });
   }
 
-  // Check if a link with the same href already exists in the DOM
-  // This prevents duplicate JS loading when the same section is preloaded multiple times
-  const existingLink = document.querySelector(`link[href="${bundlePath}"]`);
-  if (existingLink) {
-    log('sectionPreloader.js', 'preloadJavaScriptBundle', 'already-exists', 'JavaScript link already exists in DOM', {
-      bundlePath,
-      sectionName,
-      existingRel: existingLink.rel
-    });
-
-    if (window.performanceTracker) {
-      window.performanceTracker.step({
-        step: 'preloadJs_skipped',
-        file: 'sectionPreloader.js',
-        method: 'preloadJavaScriptBundle',
-        flag: 'js-skip',
-        purpose: `JavaScript link already exists for ${sectionName}`
-      });
-    }
-
-    // If it already exists, resolve immediately
-    return Promise.resolve();
-  }
-
   return new Promise((resolve, reject) => {
     // Create link element for preload
     const linkElement = document.createElement('link');
@@ -250,31 +226,6 @@ async function preloadCssBundle(bundlePath, sectionName) {
       flag: 'css-preload',
       purpose: `Preload CSS for ${sectionName}`
     });
-  }
-
-  // Check if a link with the same href already exists in the DOM
-  // This prevents duplicate CSS loading when the same section is preloaded multiple times
-  const existingLink = document.querySelector(`link[href="${bundlePath}"]`);
-  if (existingLink) {
-    log('sectionPreloader.js', 'preloadCssBundle', 'already-exists', 'CSS link already exists in DOM', {
-      bundlePath,
-      sectionName,
-      existingRel: existingLink.rel
-    });
-
-    if (window.performanceTracker) {
-      window.performanceTracker.step({
-        step: 'preloadCss_skipped',
-        file: 'sectionPreloader.js',
-        method: 'preloadCssBundle',
-        flag: 'css-skip',
-        purpose: `CSS link already exists for ${sectionName}`
-      });
-    }
-
-    // If it's already a stylesheet, resolve immediately
-    // If it's a preload link, we can also resolve (it will be converted to stylesheet when needed)
-    return Promise.resolve();
   }
 
   return new Promise((resolve, reject) => {
