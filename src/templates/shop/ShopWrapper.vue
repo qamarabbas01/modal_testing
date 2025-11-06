@@ -5,6 +5,7 @@
       <ShopSidebar />
       <div>
         <h1>Shop Page</h1>
+        <button @click="preloadDashboard">Dashboard</button>
       </div>
     </div>
     <ShopFooter />
@@ -15,4 +16,11 @@
 import { default as ShopHeader } from './ShopHeader.vue'
 import { default as ShopSidebar } from './ShopSidebar.vue'
 import { default as ShopFooter } from './ShopFooter.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const preloadDashboard = () => {
+  router.push('/dashboard')
+}
 </script>
