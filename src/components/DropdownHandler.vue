@@ -108,15 +108,16 @@ const ariaRole = computed(() => config.value.ariaRole || 'menu')
       'fixed', 'z-[1000]', 'flex', 'flex-col',
     ]
     
-    // Add transition-based class for slide-up animation
-    if (config.value.animation === 'slide-up') {
+    // Add transition-based class for slide-up/slide-down animation ONLY when useTransitionAnimation is true
+    // This ensures only specific examples (26, 27) use the CSS transition-based animation
+    if (config.value.useTransitionAnimation && config.value.animation === 'slide-up') {
       base.push('dropdown-slide-up')
       if (shouldAnimate.value) {
         base.push('dropdown-slide-up-entered')
       } else if (isOpenInternal.value) {
         base.push('dropdown-slide-up-entering')
       }
-    } else if (config.value.animation === 'slide-down') {
+    } else if (config.value.useTransitionAnimation && config.value.animation === 'slide-down') {
       base.push('dropdown-slide-down')
       if (shouldAnimate.value) {
         base.push('dropdown-slide-down-entered')
@@ -124,7 +125,7 @@ const ariaRole = computed(() => config.value.ariaRole || 'menu')
         base.push('dropdown-slide-down-entering')
       }
     } else if (config.value.animation !== 'none' && shouldAnimate.value) {
-      // For other animations, use keyframe-based classes
+      // For other animations (including slide-up/slide-down without useTransitionAnimation), use keyframe-based classes
       base.push(animationInClass.value)
     }
 
@@ -164,12 +165,20 @@ const ariaRole = computed(() => config.value.ariaRole || 'menu')
   }
 
   if (isOpenInternal.value && !shouldAnimate.value && config.value.animation !== 'none') {
-    if (config.value.animation === 'slide-up') {
+    if (config.value.useTransitionAnimation && config.value.animation === 'slide-up') {
       // For transition-based slide-up, initial state is handled by CSS class
       // No inline styles needed - CSS transition will handle it
-    } else if (config.value.animation === 'slide-down') {
+    } else if (config.value.useTransitionAnimation && config.value.animation === 'slide-down') {
       // For transition-based slide-down, initial state is handled by CSS class
       // No inline styles needed - CSS transition will handle it
+    } else if (config.value.animation === 'slide-up') {
+      style.opacity = '0'
+      style.transform = 'translateY(12px) scale(0.96)'
+      style.filter = 'blur(4px)'
+    } else if (config.value.animation === 'slide-down') {
+      style.opacity = '0'
+      style.transform = 'translateY(-12px) scale(0.96)'
+      style.filter = 'blur(4px)'
     } else if (config.value.animation === 'fade') {
       style.opacity = '0'
     } else if (config.value.animation === 'scale') {
@@ -372,7 +381,7 @@ const ariaRole = computed(() => config.value.ariaRole || 'menu')
       nextTick(() => {
         setupContentScrollPrevention()
       // Trigger animation after element is positioned and visible
-      if (config.value.animation === 'slide-up') {
+      if (config.value.useTransitionAnimation && config.value.animation === 'slide-up') {
         // Use CSS transition-based animation
         const dd = dropdownRef.value
         requestAnimationFrame(() => {
@@ -396,7 +405,7 @@ const ariaRole = computed(() => config.value.ariaRole || 'menu')
             applyAnimation(true)
           })
         })
-      } else if (config.value.animation === 'slide-down') {
+      } else if (config.value.useTransitionAnimation && config.value.animation === 'slide-down') {
         // Use CSS transition-based animation
         const dd = dropdownRef.value
         requestAnimationFrame(() => {
@@ -483,36 +492,68 @@ const ariaRole = computed(() => config.value.ariaRole || 'menu')
     }
     
     // Apply exit animation, then hide
-    if (config.value.animation === 'slide-up') {
-      // For transition-based slide-up, trigger exit transition
+    if (config.value.useTransitionAnimation && (config.value.animation === 'slide-up' || config.value.animation === 'slide-down')) {
       const dd = dropdownRef.value
       if (dd) {
-        dd.classList.remove('dropdown-slide-up-entered')
-        dd.classList.add('dropdown-slide-up-exiting')
+        if (config.value.animation === 'slide-up') {
+          dd.classList.remove('dropdown-slide-up-entered')
+          dd.classList.add('dropdown-slide-up-exiting')
+        } else {
+          dd.classList.remove('dropdown-slide-down-entered')
+          dd.classList.add('dropdown-slide-down-exiting')
+        }
+        
+        shouldAnimate.value = false
+        
+        const ms = Number(config.value.animationDurationMs || 300)
+        let timeoutId = null
+        let completed = false
+        
+        const complete = () => {
+          if (completed) return
+          completed = true
+          if (timeoutId) clearTimeout(timeoutId)
+          if (dd) {
+            dd.removeEventListener('transitionend', handleTransitionEnd)
+            if (config.value.animation === 'slide-up') {
+              dd.classList.remove('dropdown-slide-up-exiting', 'dropdown-slide-up-entering', 'dropdown-slide-up-entered')
+            } else {
+              dd.classList.remove('dropdown-slide-down-exiting', 'dropdown-slide-down-entering', 'dropdown-slide-down-entered')
+            }
+          }
+          isOpenInternal.value = false
+          removeGlobalListeners()
+          __stackUnregister(getExposedApi())
+          emit('close', payload('close', { origin }))
+          dispatchDomEvent('close', payload('close', { origin }))
+        }
+        
+        const handleTransitionEnd = (e) => {
+          if (e.target === dd && (e.propertyName === 'transform' || e.propertyName === 'opacity' || e.propertyName === 'all')) {
+            complete()
+          }
+        }
+        
+        dd.addEventListener('transitionend', handleTransitionEnd, { once: true })
+        timeoutId = setTimeout(complete, ms + 50) 
+      } else {
+        shouldAnimate.value = false
+        isOpenInternal.value = false
+        removeGlobalListeners()
+        __stackUnregister(getExposedApi())
+        emit('close', payload('close', { origin }))
+        dispatchDomEvent('close', payload('close', { origin }))
       }
-    } else if (config.value.animation === 'slide-down') {
-      // For transition-based slide-down, trigger exit transition
-      const dd = dropdownRef.value
-      if (dd) {
-        dd.classList.remove('dropdown-slide-down-entered')
-        dd.classList.add('dropdown-slide-down-exiting')
-      }
+    } else {
+      shouldAnimate.value = false
+      applyAnimation(false, () => {
+        isOpenInternal.value = false
+        removeGlobalListeners()
+        __stackUnregister(getExposedApi())
+        emit('close', payload('close', { origin }))
+        dispatchDomEvent('close', payload('close', { origin }))
+      })
     }
-    
-    shouldAnimate.value = false
-    applyAnimation(false, () => {
-      isOpenInternal.value = false
-      const dd = dropdownRef.value
-      if (dd && config.value.animation === 'slide-up') {
-        dd.classList.remove('dropdown-slide-up-exiting', 'dropdown-slide-up-entering', 'dropdown-slide-up-entered')
-      } else if (dd && config.value.animation === 'slide-down') {
-        dd.classList.remove('dropdown-slide-down-exiting', 'dropdown-slide-down-entering', 'dropdown-slide-down-entered')
-      }
-      removeGlobalListeners()
-      __stackUnregister(getExposedApi())
-      emit('close', payload('close', { origin }))
-      dispatchDomEvent('close', payload('close', { origin }))
-    })
     return true
   }
   function toggle() { return isOpenInternal.value ? close('toggle') : open('click') }

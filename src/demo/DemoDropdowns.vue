@@ -30,7 +30,7 @@ Assumes Tailwind with optional scrollbar-none utility and custom animations:
     <section>
       <button ref="a2" class="px-3 py-2 border rounded">2) Click right 360px</button>
       <DropdownHandler :anchor="a2" :config="cfg({
-        trigger: 'click', align: 'right', width: 360, animation: 'slide-down', animationDurationMs: 140,
+        trigger: 'click', align: 'right', width: 360, animation: 'fade', animationDurationMs: 140,
         style: { class: 'bg-white border border-gray-200 rounded-lg shadow-xl' }
       })">
         <div class="p-4 text-sm">
@@ -63,7 +63,7 @@ Assumes Tailwind with optional scrollbar-none utility and custom animations:
       <button ref="a4" class="px-3 py-2 border rounded">4) Mobile snap-left 100vw</button>
       <DropdownHandler :anchor="a4" :config="cfg({
         trigger: 'click', align: 'center', width: { '<640': '100vw', default: '480px' },
-        snapEdge: 'left', animation: 'slide-in-bottom-mobile', animationDurationMs: 160,
+        snapEdge: 'left', animation: 'none',
         style: { class: 'bg-white border border-gray-200 rounded-xl shadow-xl' }
       })">
         <div class="p-4 text-sm">Mobile slide-in panel</div>
@@ -101,7 +101,7 @@ Assumes Tailwind with optional scrollbar-none utility and custom animations:
       <button ref="a7" class="px-3 py-2 border rounded">7) Left align + flip</button>
       <DropdownHandler :anchor="a7" :config="cfg({
         trigger: 'click', align: 'left', width: 360, flipOnOverflow: true,
-        style: { class: 'bg-white border border-gray-200 rounded-xl shadow-xl' }, animation: 'slide-up', animationDurationMs: 120
+        style: { class: 'bg-white border border-gray-200 rounded-xl shadow-xl' }, animation: 'fade', animationDurationMs: 120
       })">
         <div class="p-4 text-sm">Flips to top if needed</div>
       </DropdownHandler>
@@ -233,7 +233,7 @@ Assumes Tailwind with optional scrollbar-none utility and custom animations:
       <button ref="a19" class="px-3 py-2 border rounded">19) Snap-left mobile</button>
       <DropdownHandler :anchor="a19" :config="cfg({
         trigger: 'click', align: 'left', width: { '<640': '100vw', default: '420px' }, snapEdge: 'left',
-        style: { class: 'bg-white border border-gray-200 rounded-xl shadow-xl' }, animation: 'slide-in-bottom-mobile', animationDurationMs: 160
+        style: { class: 'bg-white border border-gray-200 rounded-xl shadow-xl' }, animation: 'none'
       })">
         <div class="p-4 text-sm">Edge snapped on mobile</div>
       </DropdownHandler>
@@ -244,7 +244,7 @@ Assumes Tailwind with optional scrollbar-none utility and custom animations:
       <button ref="a20" class="px-3 py-2 border rounded">20) Snap-right mobile</button>
       <DropdownHandler :anchor="a20" :config="cfg({
         trigger: 'click', align: 'right', width: { '<640': '100vw', default: '420px' }, snapEdge: 'right',
-        style: { class: 'bg-white border border-gray-200 rounded-xl shadow-xl' }, animation: 'slide-in-bottom-mobile', animationDurationMs: 160
+        style: { class: 'bg-white border border-gray-200 rounded-xl shadow-xl' }, animation: 'none'
       })">
         <div class="p-4 text-sm">Edge snapped right on mobile</div>
       </DropdownHandler>
@@ -312,7 +312,7 @@ Assumes Tailwind with optional scrollbar-none utility and custom animations:
       <button ref="a26" class="px-3 py-2 border rounded">26) slide-up</button>
       <DropdownHandler :anchor="a26" :config="cfg({
         trigger: 'click', align: 'center', width: 320,
-        style: { class: 'bg-white border border-gray-200 rounded shadow' }, animation: 'slide-up', animationDurationMs: 200
+        style: { class: 'bg-white border border-gray-200 rounded shadow' }, animation: 'slide-up', animationDurationMs: 200, useTransitionAnimation: true
       })">
         <div class="p-4 text-sm">Slide up animation</div>
       </DropdownHandler>
@@ -323,7 +323,7 @@ Assumes Tailwind with optional scrollbar-none utility and custom animations:
       <button ref="a27" class="px-3 py-2 border rounded">27) slide-down</button>
       <DropdownHandler :anchor="a27" :config="cfg({
         trigger: 'click', align: 'center', width: 320,
-        style: { class: 'bg-white border border-gray-200 rounded shadow' }, animation: 'slide-down', animationDurationMs: 200
+        style: { class: 'bg-white border border-gray-200 rounded shadow' }, animation: 'slide-down', animationDurationMs: 200, useTransitionAnimation: true
       })">
         <div class="p-4 text-sm">Slide down animation</div>
       </DropdownHandler>
@@ -358,7 +358,7 @@ Assumes Tailwind with optional scrollbar-none utility and custom animations:
         <button class="px-2 py-1 border rounded" @click="ref30?.open()">open()</button>
         <button class="px-2 py-1 border rounded" @click="ref30?.close()">close()</button>
         <button class="px-2 py-1 border rounded" @click="ref30?.toggle()">toggle()</button>
-        <button class="px-2 py-1 border rounded" @click="ref30?.reposition()">reposition()</button>
+        <button class="px-2 py-1 border rounded" @click="ref30?.isOpen() ? ref30?.close() : ref30?.open()">reposition()</button>
       </div>
       <DropdownHandler ref="ref30" :anchor="a30" :config="cfg({
         trigger: 'click', align: 'center', width: 360,
