@@ -15,15 +15,22 @@
       <div class="flex justify-between items-center py-4">
         <!-- Logo/Brand -->
         <div class="flex items-center">
-          <h1 class="text-xl font-bold text-gray-900">Vue App</h1>
+          <RouterLink to="/" class="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors">
+            Vue App
+          </RouterLink>
         </div>
 
         <!-- Header content placeholder -->
         <div class="flex items-center space-x-4">
-          <!-- Placeholder for header actions/navigation -->
-          <div class="text-sm text-gray-500">
-            Header Component - Meta & Schema Methods Ready
-          </div>
+          <!-- Navigation Links -->
+          <nav class="flex items-center space-x-4">
+            <RouterLink 
+              to="/demo-dropdowns" 
+              class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              Demo Dropdowns
+            </RouterLink>
+          </nav>
         </div>
       </div>
     </div>
@@ -32,6 +39,7 @@
 
 <script setup>
 import { onMounted, onUnmounted } from 'vue';
+import { RouterLink } from 'vue-router';
 import { log } from '../../utils/common/logHandler.js';
 
 // Component name for logging
@@ -193,7 +201,5 @@ defineExpose({
 </script>
 
 <style scoped>
-.app-header {
-  /* Header specific styles */
-}
+/* Header specific styles */
 </style>

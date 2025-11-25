@@ -54,3 +54,43 @@ html {
   background: #555;
 }
 
+/* Dropdown slide-up animation with transition */
+[data-dropdown-handler].dropdown-slide-up {
+  transition: all var(--dh-anim-ms, 300ms) ease-out;
+}
+
+[data-dropdown-handler].dropdown-slide-up.dropdown-slide-up-entering {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+[data-dropdown-handler].dropdown-slide-up.dropdown-slide-up-entered {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-dropdown-handler].dropdown-slide-up.dropdown-slide-up-exiting {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+/* Dropdown slide-down animation with transition */
+[data-dropdown-handler].dropdown-slide-down {
+  transition: all var(--dh-anim-ms, 300ms) cubic-bezier(0.17, 0.04, 0.03, 0.94);
+}
+
+[data-dropdown-handler].dropdown-slide-down.dropdown-slide-down-entering {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+[data-dropdown-handler].dropdown-slide-down.dropdown-slide-down-entered {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-dropdown-handler].dropdown-slide-down.dropdown-slide-down-exiting {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+

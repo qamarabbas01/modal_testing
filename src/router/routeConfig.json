@@ -642,6 +642,14 @@
     "componentPath": "@/components/dev/DemoPage.vue"
   },
   {
+    "slug": "/demo-dropdowns",
+    "requiresAuth": false,
+    "section": "demo",
+    "supportedRoles": ["all"],
+    "enabled": true,
+    "componentPath": "@/demo/DemoDropdowns.vue"
+  },
+  {
     "slug": "/:pathMatch(.*)*",
     "redirect": "/404"
   }

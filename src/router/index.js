@@ -107,11 +107,12 @@ function generateRoutesFromConfig() {
 /**
  * Pre-load all components using import.meta.glob
  * This allows Vite to analyze and bundle all components at build time
- * The glob pattern matches all Vue components in templates and components directories
+ * The glob pattern matches all Vue components in templates, components, and demo directories
  */
 const componentModules = import.meta.glob([
   '@/templates/**/*.vue',
-  '@/components/**/*.vue'
+  '@/components/**/*.vue',
+  '@/demo/**/*.vue'
 ], { eager: false });
 
 /**
